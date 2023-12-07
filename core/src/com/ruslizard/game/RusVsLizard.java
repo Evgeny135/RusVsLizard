@@ -79,6 +79,7 @@ public class RusVsLizard extends ApplicationAdapter{
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.setColor(Color.RED);
 		shapeRenderer.setProjectionMatrix(camera.combined);
+		shapeRenderer.re
 		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
 		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
 		shapeRenderer.setProjectionMatrix(camera.combined);
