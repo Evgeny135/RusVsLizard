@@ -2,6 +2,8 @@ package com.ruslizard.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -27,7 +29,9 @@ public class Player {
 
     private TextureRegion currentFrame;
     private boolean isAttack = false;
-    private bppl
+    private final Rectangle boundsAttack;
+
+//    private final Sound sound;
 
     private final TextureRegion[] playerMoveRight = {new TextureRegion(new Texture("Player/playerMoveRight/0.png")),
             new TextureRegion(new Texture("Player/playerMoveRight/1.png")),
@@ -117,12 +121,35 @@ public class Player {
         spriteBatch = new SpriteBatch();
 
         bounds = new Rectangle(position.x+10, position.y+8, playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20, playerAnimation.getKeyFrame(stateTime).getRegionHeight()-18);
+        boundsAttack = new Rectangle(position.x,position.y,37, 39);
+
+//        sound = Gdx.audio.newSound(Gdx.files.internal("GOYDA.mp3"));
+    }
+
+    public void updateBoundsAttack(){
+        boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20);
+        if (direction == Direction.UP || direction == Direction.UP_LEFT || direction == Direction.UP_RIGHT){
+            boundsAttack.height = 12;
+            boundsAttack.width = 37;
+            boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionHeight()-10);
+        }else if (direction == Direction.DOWN || direction == Direction.DOWN_LEFT || direction == Direction.DOWN_RIGHT){
+            boundsAttack.height = 12;
+            boundsAttack.width = 37;
+            boundsAttack.setPosition(position.x+10,position.y-(playerAnimation.getKeyFrame(stateTime).getRegionHeight())+53);
+        }else if (direction == Direction.RIGHT){
+            boundsAttack.height = 39;
+            boundsAttack.width = 12;
+            boundsAttack.setPosition(position.x+10+playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20,position.y+8);
+        }else if (direction == Direction.LEFT){
+            boundsAttack.height = 39;
+            boundsAttack.width = 12;
+            boundsAttack.setPosition(position.x+10-playerAnimation.getKeyFrame(stateTime).getRegionWidth()+45,position.y+8);
+        }
 
     }
 
     public void update() {
         bounds.setPosition(position.x+10,position.y+8);
-
         if (direction == Direction.UP){
             if (collisionController.checkCollision(bounds)){
                 position.y = position.y - SPEED;
@@ -175,22 +202,22 @@ public class Player {
             position.x += SPEED;
             setPlayerAnimation(playerMoveRight);
             direction = Direction.RIGHT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP) && !isAttack) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
             position.x += SPEED;
             position.y +=SPEED;
             setPlayerAnimation(playerMoveUp);
             direction = Direction.UP_RIGHT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP) && !isAttack) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
             position.x -= SPEED;
             position.y +=SPEED;
             setPlayerAnimation(playerMoveUp);
             direction = Direction.UP_LEFT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN) &&!isAttack){
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             position.x -= SPEED;
             position.y -=SPEED;
             setPlayerAnimation(playerMoveDown);
             direction = Direction.DOWN_LEFT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN) && !isAttack){
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)){
             position.x += SPEED;
             position.y -=SPEED;
             setPlayerAnimation(playerMoveDown);
@@ -220,7 +247,10 @@ public class Player {
                 setPlayerAnimation(playerStayDown);
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.Z) && !isAttack) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Z) && !isAttack && (direction!=Direction.UP_LEFT && direction!=Direction.UP_RIGHT
+        && direction!=Direction.DOWN_LEFT && direction!=Direction.DOWN_RIGHT)) {
+//            sound.play();
+//            sound.setVolume(1);
             isAttack = true;
             stateTime = 0;
             switch (direction){
@@ -283,5 +313,17 @@ public class Player {
 
     public float getPositionY() {
         return position.y;
+    }
+
+    public float getBoundsAttackX() {
+        return boundsAttack.x;
+    }
+
+    public float getBoundsAttackY() {
+        return boundsAttack.y;
+    }
+
+    public Rectangle getBoundsAttack() {
+        return boundsAttack;
     }
 }

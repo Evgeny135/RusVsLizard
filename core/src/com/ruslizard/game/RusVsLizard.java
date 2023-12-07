@@ -30,13 +30,16 @@ public class RusVsLizard extends ApplicationAdapter{
 
 	private Lizard lizard;
 
-	private Music music;
+//	private Music music;
 
 
 	@Override
 	public void create() {
-		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
-		music.setLooping(true);
+//		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
+//		music.setLooping(true);
+//
+//		music.setVolume(0.1f);
+
 		camera = new OrthographicCamera();
 		cameraController = new CameraController(camera);
 
@@ -60,7 +63,6 @@ public class RusVsLizard extends ApplicationAdapter{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
 		cameraController.controlCamera(tiledMap, player.getPositionX(),player.getPositionY());
 
 		tiledMapRenderer.setView(camera);
@@ -71,12 +73,14 @@ public class RusVsLizard extends ApplicationAdapter{
 		player.move();
 		player.draw(camera);
 		player.update();
+		player.updateBoundsAttack();
 
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.setColor(Color.RED);
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
+		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		for (MapObject mapObject :
 			tiledMap.getLayers().get("collision").getObjects()) {
@@ -86,7 +90,7 @@ public class RusVsLizard extends ApplicationAdapter{
 
 		shapeRenderer.end();
 
-		music.play();
+//		music.play();
 	}
 
 	@Override
