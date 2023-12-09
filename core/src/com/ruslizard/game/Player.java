@@ -2,8 +2,6 @@ package com.ruslizard.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -129,13 +127,13 @@ public class Player {
     public void updateBoundsAttack(){
         boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20);
         if (direction == Direction.UP || direction == Direction.UP_LEFT || direction == Direction.UP_RIGHT){
-            boundsAttack.height = 12;
+            boundsAttack.height = 8;
             boundsAttack.width = 37;
             boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionHeight()-10);
         }else if (direction == Direction.DOWN || direction == Direction.DOWN_LEFT || direction == Direction.DOWN_RIGHT){
-            boundsAttack.height = 12;
+            boundsAttack.height = 8;
             boundsAttack.width = 37;
-            boundsAttack.setPosition(position.x+10,position.y-(playerAnimation.getKeyFrame(stateTime).getRegionHeight())+53);
+            boundsAttack.setPosition(position.x+10,position.y-(playerAnimation.getKeyFrame(stateTime).getRegionHeight())+57);
         }else if (direction == Direction.RIGHT){
             boundsAttack.height = 39;
             boundsAttack.width = 12;
@@ -151,38 +149,38 @@ public class Player {
     public void update() {
         bounds.setPosition(position.x+10,position.y+8);
         if (direction == Direction.UP){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.y = position.y - SPEED;
             }
         }else if (direction == Direction.DOWN){
-            if (collisionController.checkCollision(bounds)) {
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)) {
                 position.y = position.y + SPEED;
             }
         }else if (direction == Direction.RIGHT){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x - SPEED;
             }
         }else if (direction == Direction.LEFT){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x + SPEED;
             }
         }else if (direction == Direction.UP_RIGHT){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x - SPEED;
                 position.y = position.y - SPEED;
             }
         }else if (direction == Direction.UP_LEFT){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x + SPEED;
                 position.y = position.y - SPEED;
             }
         } else if (direction == Direction.DOWN_LEFT) {
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x + SPEED;
                 position.y = position.y + SPEED;
             }
         }else if (direction == Direction.DOWN_RIGHT){
-            if (collisionController.checkCollision(bounds)){
+            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
                 position.x = position.x - SPEED;
                 position.y = position.y + SPEED;
             }
@@ -195,6 +193,19 @@ public class Player {
 
     public float getBoundsY() {
         return bounds.getY();
+    }
+
+    public boolean checkCollisionPerson(Rectangle rectangle){
+        if (boundsAttack.overlaps(rectangle)){
+            return true;
+        }
+        return false;
+    }
+
+    public void attack(Rectangle rectangle){
+        if (isAttack){
+            checkCollisionPerson(rectangle);
+        }
     }
 
     public void move() {
@@ -296,8 +307,6 @@ public class Player {
             currentFrame = playerAnimation.getKeyFrame(stateTime += Gdx.graphics.getDeltaTime(), true);
         }
 
-
-//        currentFrame = playerAnimation.getKeyFrame(stateTime+=Gdx.graphics.getDeltaTime(), true);
         spriteBatch.draw(currentFrame, position.x, position.y, currentFrame.getRegionWidth(), currentFrame.getRegionHeight());
         spriteBatch.end();
 
@@ -325,5 +334,9 @@ public class Player {
 
     public Rectangle getBoundsAttack() {
         return boundsAttack;
+    }
+
+    public boolean isAttack(){
+        return isAttack;
     }
 }

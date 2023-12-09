@@ -17,8 +17,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.ruslizard.game.controllers.CameraController;
 import com.ruslizard.game.controllers.CollisionController;
+import com.ruslizard.game.screen.HeartScreen;
 
-public class RusVsLizard extends ApplicationAdapter{
+public class RusVsLizard extends Game{
 	private OrthographicCamera camera;
 	private TiledMap tiledMap;
 	private TiledMapRenderer tiledMapRenderer;
@@ -30,7 +31,11 @@ public class RusVsLizard extends ApplicationAdapter{
 
 	private Lizard lizard;
 
+	private AttackSystem attackSystem;
+
 //	private Music music;
+
+	private HeartScreen heartScreen;
 
 
 	@Override
@@ -40,46 +45,61 @@ public class RusVsLizard extends ApplicationAdapter{
 //
 //		music.setVolume(0.1f);
 
+		heartScreen = new HeartScreen();
+
+
+
 		camera = new OrthographicCamera();
 		cameraController = new CameraController(camera);
 
 		tiledMap = new TmxMapLoader().load("Map\\Test.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-		spriteBatch = new SpriteBatch();
 
-		player = new Player(new CollisionController(tiledMap));
-		player.setPosition(800, 500);
+		spriteBatch = new SpriteBatch();
 
 		lizard = new Lizard();
 		lizard.setPosition(500,500);
 
+		player = new Player(new CollisionController(tiledMap,lizard));
+		player.setPosition(800, 500);
+
+
 		shapeRenderer = new ShapeRenderer();
 
+		attackSystem = new AttackSystem(player,lizard);
 	}
+
+
 
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+
 		cameraController.controlCamera(tiledMap, player.getPositionX(),player.getPositionY());
 
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 
+		heartScreen.render(Gdx.graphics.getDeltaTime());
+
 		lizard.draw(camera);
 		lizard.update();
 		player.move();
+		player.attack(lizard.getBounds());
 		player.draw(camera);
 		player.update();
 		player.updateBoundsAttack();
+
+		attackSystem.attack();
 
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.setColor(Color.RED);
 		shapeRenderer.setProjectionMatrix(camera.combined);
-		shapeRenderer.re
+		shapeRenderer.rect(lizard.getBounds().x, lizard.getBounds().y, lizard.getBounds().width, lizard.getBounds().height);
 		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
 		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
 		shapeRenderer.setProjectionMatrix(camera.combined);
