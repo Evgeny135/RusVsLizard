@@ -4,36 +4,35 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class AttackSystem {
     private Player player;
-    private Lizard lizard;
+    private LizardFactory lizardFactory;
 
     private Rectangle playerRectangle;
     private Rectangle lizardRectangle;
 
-    public AttackSystem(Player player, Lizard lizard) {
+    public AttackSystem(Player player, LizardFactory lizardFactory) {
         this.player = player;
-        this.lizard = lizard;
+        this.lizardFactory = lizardFactory;
 
         playerRectangle = player.getBoundsAttack();
-        lizardRectangle = lizard.getBounds();
     }
 
-    public void setLizardHP(){
-        lizard.setHP(lizard.getHP()-2);
-        try {
-            Thread.sleep(3);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public void setLizardHP(){
+//        lizardFactory.setHP(lizardFactory.getHP()-2);
+//        try {
+//            Thread.sleep(3);
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void attack(){
-        if (player.isAttack()) {
-            if (playerRectangle.overlaps(lizardRectangle)) {
-                setLizardHP();
+        for (Lizard l :
+                lizardFactory.getLizardList()) {
+            if (player.isAttack()) {
+                if (playerRectangle.overlaps(l.getBounds())) {
+                    l.setHp(0);
+                }
             }
-        }
-        if (lizard.getHP()<=0){
-            System.out.println("PIDOR");
         }
     }
 }

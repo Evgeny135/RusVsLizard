@@ -2,6 +2,7 @@ package com.ruslizard.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -338,5 +339,13 @@ public class Player {
 
     public boolean isAttack(){
         return isAttack;
+    }
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    public Rectangle getBound(){
+        return bounds;
     }
 }

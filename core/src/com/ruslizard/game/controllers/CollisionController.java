@@ -6,9 +6,10 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.math.Rectangle;
 import com.ruslizard.game.Lizard;
+import com.ruslizard.game.LizardFactory;
 
 public class CollisionController {
-    private Lizard lizard;
+    private LizardFactory lizardFactory;
     private MapObjects mapObjects;
 
     public boolean checkCollisionMap(Rectangle object) {
@@ -22,8 +23,11 @@ public class CollisionController {
     }
 
     public boolean checkCollisionLizard(Rectangle object){
-        if (lizard.getBounds().overlaps(object)){
-            return true;
+        for (Lizard l:
+             lizardFactory.getLizardList()) {
+            if (l.getBounds().overlaps(object)){
+                return true;
+            }
         }
         return false;
     }
@@ -32,8 +36,8 @@ public class CollisionController {
         return mapObjects;
     }
 
-    public CollisionController(TiledMap tiledMap, Lizard lizard) {
+    public CollisionController(TiledMap tiledMap, LizardFactory lizardFactory) {
         this.mapObjects = tiledMap.getLayers().get("collision").getObjects();
-        this.lizard = lizard;
+        this.lizardFactory = lizardFactory;
     }
 }

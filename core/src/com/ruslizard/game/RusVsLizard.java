@@ -33,17 +33,19 @@ public class RusVsLizard extends Game{
 
 	private AttackSystem attackSystem;
 
-//	private Music music;
+	private Music music;
 
 	private HeartScreen heartScreen;
+
+	private LizardFactory lizardFactory;
 
 
 	@Override
 	public void create() {
-//		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
-//		music.setLooping(true);
-//
-//		music.setVolume(0.1f);
+		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
+		music.setLooping(true);
+
+		music.setVolume(0.1f);
 
 		heartScreen = new HeartScreen();
 
@@ -55,19 +57,17 @@ public class RusVsLizard extends Game{
 		tiledMap = new TmxMapLoader().load("Map\\Test.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-
 		spriteBatch = new SpriteBatch();
 
-		lizard = new Lizard();
-		lizard.setPosition(500,500);
+		lizardFactory = new LizardFactory();
+		lizardFactory.generateLizard();
 
-		player = new Player(new CollisionController(tiledMap,lizard));
+		player = new Player(new CollisionController(tiledMap,lizardFactory));
 		player.setPosition(800, 500);
-
 
 		shapeRenderer = new ShapeRenderer();
 
-		attackSystem = new AttackSystem(player,lizard);
+		attackSystem = new AttackSystem(player,lizardFactory);
 	}
 
 
@@ -85,21 +85,30 @@ public class RusVsLizard extends Game{
 
 		heartScreen.render(Gdx.graphics.getDeltaTime());
 
-		lizard.draw(camera);
-		lizard.update();
 		player.move();
-		player.attack(lizard.getBounds());
+		for (Lizard l :
+				lizardFactory.getLizardList()) {
+			
+		player.attack(l.getBounds());
+		}
 		player.draw(camera);
 		player.update();
 		player.updateBoundsAttack();
 
 		attackSystem.attack();
 
+		lizardFactory.regenerateLizard();
+
+		lizardFactory.drawLizards(camera,player.getPosition(),player.getBound());
+
 
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
 		shapeRenderer.setColor(Color.RED);
 		shapeRenderer.setProjectionMatrix(camera.combined);
-		shapeRenderer.rect(lizard.getBounds().x, lizard.getBounds().y, lizard.getBounds().width, lizard.getBounds().height);
+		for (Lizard l :
+				lizardFactory.getLizardList()) {
+			shapeRenderer.rect(l.getBounds().x, l.getBounds().y, l.getBounds().width, l.getBounds().height);
+		}
 		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
 		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
 		shapeRenderer.setProjectionMatrix(camera.combined);

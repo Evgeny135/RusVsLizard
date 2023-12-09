@@ -43,10 +43,11 @@ public class HeartScreen implements Screen {
         // Отрисовка сердец
         float heartWidth = heartTexture.getWidth();
         float heartHeight = heartTexture.getHeight();
-        float heartSpacing = 20; // Расстояние между сердцами
+        float heartSpacing = 10; // Расстояние между сердцами
 
         float x = 20; // Позиция по X
-        float y = Gdx.graphics.getHeight() - heartHeight - 20; // Позиция по Y
+//        float y = Gdx.graphics.getHeight() - heartHeight - 20; // Позиция по Y
+        float y = 850; // Позиция по Y
 
         for (int i = 0; i < 3; i++) {
             batch.draw(heartTexture, x, y);
@@ -60,7 +61,7 @@ public class HeartScreen implements Screen {
     public void resize(int width, int height) {
         float heartWidth = heartTexture.getWidth();
         float heartHeight = heartTexture.getHeight();
-        float heartSpacing = 20; // Расстояние между сердцами
+        float heartSpacing = 10; // Расстояние между сердцами
 
         float x = 20; // Позиция по X
         float y = height - heartHeight - 20; // Позиция по Y
