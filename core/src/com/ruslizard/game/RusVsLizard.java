@@ -29,8 +29,7 @@ public class RusVsLizard extends Game{
 
 	private SpriteBatch spriteBatch;
 
-	private Lizard lizard;
-
+	private TimerIcon timerIcon;
 	private AttackSystem attackSystem;
 
 	private Music music;
@@ -39,6 +38,7 @@ public class RusVsLizard extends Game{
 
 	private LizardFactory lizardFactory;
 
+	private ScreenDeath screenDeath;
 
 	@Override
 	public void create() {
@@ -47,9 +47,6 @@ public class RusVsLizard extends Game{
 
 		music.setVolume(0.1f);
 
-		heartScreen = new HeartScreen();
-
-
 
 		camera = new OrthographicCamera();
 		cameraController = new CameraController(camera);
@@ -57,43 +54,51 @@ public class RusVsLizard extends Game{
 		tiledMap = new TmxMapLoader().load("Map\\Test.tmx");
 		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
+		player = new Player(new CollisionController(tiledMap,lizardFactory));
+
 		spriteBatch = new SpriteBatch();
 
 		lizardFactory = new LizardFactory();
+		heartScreen = new HeartScreen(lizardFactory);
 		lizardFactory.generateLizard();
 
-		player = new Player(new CollisionController(tiledMap,lizardFactory));
 		player.setPosition(800, 500);
 
 		shapeRenderer = new ShapeRenderer();
 
 		attackSystem = new AttackSystem(player,lizardFactory);
+
+		timerIcon = new TimerIcon(1520,880);
+
+		screenDeath = new ScreenDeath();
 	}
-
-
 
 	@Override
 	public void render() {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-
 		cameraController.controlCamera(tiledMap, player.getPositionX(),player.getPositionY());
 
 		tiledMapRenderer.setView(camera);
 		tiledMapRenderer.render();
 
-		heartScreen.render(Gdx.graphics.getDeltaTime());
-
 		player.move();
 		for (Lizard l :
 				lizardFactory.getLizardList()) {
-			
+
 		player.attack(l.getBounds());
 		}
 		player.draw(camera);
 		player.update();
 		player.updateBoundsAttack();
+
+
+		spriteBatch.begin();
+		timerIcon.draw(spriteBatch);
+		timerIcon.update(player.getDashTimer());
+		spriteBatch.end();
+		heartScreen.render(Gdx.graphics.getDeltaTime());
 
 		attackSystem.attack();
 
@@ -109,6 +114,10 @@ public class RusVsLizard extends Game{
 				lizardFactory.getLizardList()) {
 			shapeRenderer.rect(l.getBounds().x, l.getBounds().y, l.getBounds().width, l.getBounds().height);
 		}
+		for (Lizard l :
+				lizardFactory.getLizardList()) {
+			shapeRenderer.rect(l.getBoundsAttack().x, l.getBoundsAttack().y, l.getBoundsAttack().width, l.getBoundsAttack().height);
+		}
 		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
 		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
 		shapeRenderer.setProjectionMatrix(camera.combined);
@@ -120,7 +129,11 @@ public class RusVsLizard extends Game{
 
 		shapeRenderer.end();
 
-//		music.play();
+		if (lizardFactory.getPlayerHp()<=0){
+			setScreen(screenDeath);
+		}
+
+		music.play();
 	}
 
 	@Override

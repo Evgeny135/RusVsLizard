@@ -4,15 +4,23 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.ruslizard.game.LizardFactory;
+import com.ruslizard.game.Player;
+
+import java.util.Stack;
 
 public class HeartScreen implements Screen {
     private Texture heartTexture;
     private SpriteBatch batch;
 
-    public HeartScreen() {
+    private LizardFactory lizardFactory;
+
+    public HeartScreen(LizardFactory lizardFactory) {
         batch = new SpriteBatch();
         heartTexture = new Texture("Player/heart/Heart.png");
+        this.lizardFactory = lizardFactory;
     }
+
 
     @Override
     public void show() {
@@ -27,7 +35,7 @@ public class HeartScreen implements Screen {
         float x = 20; // Позиция по X
         float y = Gdx.graphics.getHeight() - heartHeight - 20; // Позиция по Y
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < lizardFactory.getPlayerHp(); i++) {
             batch.draw(heartTexture, x, y);
             x += heartWidth + heartSpacing; // Увеличиваем позицию по X для следующего сердца
         }
@@ -49,10 +57,11 @@ public class HeartScreen implements Screen {
 //        float y = Gdx.graphics.getHeight() - heartHeight - 20; // Позиция по Y
         float y = 850; // Позиция по Y
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < lizardFactory.getPlayerHp(); i++) {
             batch.draw(heartTexture, x, y);
             x += heartWidth + heartSpacing; // Увеличиваем позицию по X для следующего сердца
         }
+
 
         batch.end();
     }
@@ -66,7 +75,7 @@ public class HeartScreen implements Screen {
         float x = 20; // Позиция по X
         float y = height - heartHeight - 20; // Позиция по Y
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 30; i++) {
             x += heartWidth + heartSpacing; // Увеличиваем позицию по X для следующего сердца
         }
     }

@@ -30,7 +30,8 @@ public class Player {
     private boolean isAttack = false;
     private final Rectangle boundsAttack;
 
-//    private final Sound sound;
+    private float dashTimer = 10;
+    private Sound sound;
 
     private final TextureRegion[] playerMoveRight = {new TextureRegion(new Texture("Player/playerMoveRight/0.png")),
             new TextureRegion(new Texture("Player/playerMoveRight/1.png")),
@@ -109,6 +110,7 @@ public class Player {
     private final TextureRegion[] playerStayLeft = {new TextureRegion(new Texture("Player/playerMoveLeft/0.png"))};
     private final TextureRegion[] playerStayUp = {new TextureRegion(new Texture("Player/playerMoveUp/0.png"))};
     private final TextureRegion[] playerStayDown = {new TextureRegion(new Texture("Player/playerMoveDown/0.png"))};
+    private boolean isDash = false;
 
 
     public Player(CollisionController collisionController) {
@@ -119,69 +121,69 @@ public class Player {
         stateTime = 0;
         spriteBatch = new SpriteBatch();
 
-        bounds = new Rectangle(position.x+10, position.y+8, playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20, playerAnimation.getKeyFrame(stateTime).getRegionHeight()-18);
-        boundsAttack = new Rectangle(position.x,position.y,37, 39);
+        bounds = new Rectangle(position.x + 10, position.y + 8, playerAnimation.getKeyFrame(stateTime).getRegionWidth() - 20, playerAnimation.getKeyFrame(stateTime).getRegionHeight() - 18);
+        boundsAttack = new Rectangle(position.x, position.y, 37, 39);
 
-//        sound = Gdx.audio.newSound(Gdx.files.internal("GOYDA.mp3"));
+        sound = Gdx.audio.newSound(Gdx.files.internal("dash.mp3"));
     }
 
-    public void updateBoundsAttack(){
-        boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20);
-        if (direction == Direction.UP || direction == Direction.UP_LEFT || direction == Direction.UP_RIGHT){
+    public void updateBoundsAttack() {
+        boundsAttack.setPosition(position.x + 10, position.y + playerAnimation.getKeyFrame(stateTime).getRegionWidth() - 20);
+        if (direction == Direction.UP || direction == Direction.UP_LEFT || direction == Direction.UP_RIGHT) {
             boundsAttack.height = 8;
             boundsAttack.width = 37;
-            boundsAttack.setPosition(position.x+10,position.y+playerAnimation.getKeyFrame(stateTime).getRegionHeight()-10);
-        }else if (direction == Direction.DOWN || direction == Direction.DOWN_LEFT || direction == Direction.DOWN_RIGHT){
+            boundsAttack.setPosition(position.x + 10, position.y + playerAnimation.getKeyFrame(stateTime).getRegionHeight() - 10);
+        } else if (direction == Direction.DOWN || direction == Direction.DOWN_LEFT || direction == Direction.DOWN_RIGHT) {
             boundsAttack.height = 8;
             boundsAttack.width = 37;
-            boundsAttack.setPosition(position.x+10,position.y-(playerAnimation.getKeyFrame(stateTime).getRegionHeight())+57);
-        }else if (direction == Direction.RIGHT){
+            boundsAttack.setPosition(position.x + 10, position.y - (playerAnimation.getKeyFrame(stateTime).getRegionHeight()) + 57);
+        } else if (direction == Direction.RIGHT) {
             boundsAttack.height = 39;
             boundsAttack.width = 12;
-            boundsAttack.setPosition(position.x+10+playerAnimation.getKeyFrame(stateTime).getRegionWidth()-20,position.y+8);
-        }else if (direction == Direction.LEFT){
+            boundsAttack.setPosition(position.x + 10 + playerAnimation.getKeyFrame(stateTime).getRegionWidth() - 20, position.y + 8);
+        } else if (direction == Direction.LEFT) {
             boundsAttack.height = 39;
             boundsAttack.width = 12;
-            boundsAttack.setPosition(position.x+10-playerAnimation.getKeyFrame(stateTime).getRegionWidth()+45,position.y+8);
+            boundsAttack.setPosition(position.x + 10 - playerAnimation.getKeyFrame(stateTime).getRegionWidth() + 45, position.y + 8);
         }
 
     }
 
     public void update() {
-        bounds.setPosition(position.x+10,position.y+8);
-        if (direction == Direction.UP){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        bounds.setPosition(position.x + 10, position.y + 8);
+        if (direction == Direction.UP) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.y = position.y - SPEED;
             }
-        }else if (direction == Direction.DOWN){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)) {
+        } else if (direction == Direction.DOWN) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.y = position.y + SPEED;
             }
-        }else if (direction == Direction.RIGHT){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        } else if (direction == Direction.RIGHT) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x - SPEED;
             }
-        }else if (direction == Direction.LEFT){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        } else if (direction == Direction.LEFT) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x + SPEED;
             }
-        }else if (direction == Direction.UP_RIGHT){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        } else if (direction == Direction.UP_RIGHT) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x - SPEED;
                 position.y = position.y - SPEED;
             }
-        }else if (direction == Direction.UP_LEFT){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        } else if (direction == Direction.UP_LEFT) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x + SPEED;
                 position.y = position.y - SPEED;
             }
         } else if (direction == Direction.DOWN_LEFT) {
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x + SPEED;
                 position.y = position.y + SPEED;
             }
-        }else if (direction == Direction.DOWN_RIGHT){
-            if (collisionController.checkCollisionMap(bounds) || collisionController.checkCollisionLizard(bounds)){
+        } else if (direction == Direction.DOWN_RIGHT) {
+            if (collisionController.checkCollisionMap(bounds)) {
                 position.x = position.x - SPEED;
                 position.y = position.y + SPEED;
             }
@@ -196,59 +198,86 @@ public class Player {
         return bounds.getY();
     }
 
-    public boolean checkCollisionPerson(Rectangle rectangle){
-        if (boundsAttack.overlaps(rectangle)){
+    public boolean checkCollisionPerson(Rectangle rectangle) {
+        if (boundsAttack.overlaps(rectangle)) {
             return true;
         }
         return false;
     }
 
-    public void attack(Rectangle rectangle){
-        if (isAttack){
+    public void attack(Rectangle rectangle) {
+        if (isAttack) {
             checkCollisionPerson(rectangle);
         }
     }
 
     public void move() {
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) && !isAttack) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            if (dashTimer <= 0) {
+                isDash = true;
+                switch (direction) {
+                    case RIGHT:
+                        setPosition(position.x + 100, position.y);
+                        break;
+                    case UP:
+                        setPosition(position.x, position.y + 100);
+                        break;
+                    case DOWN:
+                        setPosition(position.x, position.y - 100);
+                        break;
+                    case LEFT:
+                        setPosition(position.x - 100, position.y);
+                        break;
+                }
+                sound.play();
+                dashTimer = 10;
+            }else{
+                isDash = false;
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) && !isAttack
+                && !isDash) {
             position.x += SPEED;
             setPlayerAnimation(playerMoveRight);
             direction = Direction.RIGHT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.UP) && !isDash) {
             position.x += SPEED;
-            position.y +=SPEED;
+            position.y += SPEED;
             setPlayerAnimation(playerMoveUp);
             direction = Direction.UP_RIGHT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP)) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.UP) && !isDash) {
             position.x -= SPEED;
-            position.y +=SPEED;
+            position.y += SPEED;
             setPlayerAnimation(playerMoveUp);
             direction = Direction.UP_LEFT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && Gdx.input.isKeyPressed(Input.Keys.DOWN) && !isDash) {
             position.x -= SPEED;
-            position.y -=SPEED;
+            position.y -= SPEED;
             setPlayerAnimation(playerMoveDown);
             direction = Direction.DOWN_LEFT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)){
+        } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && Gdx.input.isKeyPressed(Input.Keys.DOWN)
+         && !isDash) {
             position.x += SPEED;
-            position.y -=SPEED;
+            position.y -= SPEED;
             setPlayerAnimation(playerMoveDown);
             direction = Direction.DOWN_RIGHT;
-        }
-        else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) && !isAttack) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && !(Gdx.input.isKeyPressed(Input.Keys.UP) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) && !isAttack
+                && !isDash) {
             position.x -= SPEED;
             setPlayerAnimation(playerMoveLeft);
             direction = Direction.LEFT;
-        } else if (Gdx.input.isKeyPressed(Input.Keys.UP) && !(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && !isAttack) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.UP) && !(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && !isAttack
+                && !isDash) {
             position.y += SPEED;
             setPlayerAnimation(playerMoveUp);
             direction = Direction.UP;
-        }else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && !isAttack) {
+        } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && !(Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && !isAttack
+                && !isDash) {
             position.y -= SPEED;
             direction = Direction.DOWN;
             setPlayerAnimation(playerMoveDown);
-        }else if (!Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.LEFT)
-                && !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !isAttack) {
+        } else if (!Gdx.input.isKeyPressed(Input.Keys.RIGHT) && !Gdx.input.isKeyPressed(Input.Keys.LEFT)
+                && !Gdx.input.isKeyPressed(Input.Keys.UP) && !Gdx.input.isKeyPressed(Input.Keys.DOWN) && !isAttack && !isDash) {
             if (direction == Direction.UP) {
                 setPlayerAnimation(playerStayUp);
             } else if (direction == Direction.LEFT) {
@@ -259,13 +288,13 @@ public class Player {
                 setPlayerAnimation(playerStayDown);
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.Z) && !isAttack && (direction!=Direction.UP_LEFT && direction!=Direction.UP_RIGHT
-        && direction!=Direction.DOWN_LEFT && direction!=Direction.DOWN_RIGHT)) {
+        if (Gdx.input.isKeyPressed(Input.Keys.Z) && !isAttack && (direction != Direction.UP_LEFT && direction != Direction.UP_RIGHT
+                && direction != Direction.DOWN_LEFT && direction != Direction.DOWN_RIGHT)) {
 //            sound.play();
 //            sound.setVolume(1);
             isAttack = true;
             stateTime = 0;
-            switch (direction){
+            switch (direction) {
                 case RIGHT:
                     setPlayerAttackAnimation(playerAttackRight);
                     break;
@@ -286,7 +315,7 @@ public class Player {
         playerAnimation = new Animation<>(0.12f, playerFrames);
     }
 
-    void setPlayerAttackAnimation(TextureRegion[] playerFrames){
+    void setPlayerAttackAnimation(TextureRegion[] playerFrames) {
         playerAnimation = new Animation<>(0.07f, playerFrames);
     }
 
@@ -297,6 +326,7 @@ public class Player {
     public void draw(Camera camera) {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
+        dashTimer -= Gdx.graphics.getDeltaTime();
         if (isAttack) {
             currentFrame = playerAnimation.getKeyFrame(stateTime, false); // Play animation only once
             if (playerAnimation.isAnimationFinished(stateTime)) {
@@ -337,7 +367,7 @@ public class Player {
         return boundsAttack;
     }
 
-    public boolean isAttack(){
+    public boolean isAttack() {
         return isAttack;
     }
 
@@ -345,7 +375,11 @@ public class Player {
         return position;
     }
 
-    public Rectangle getBound(){
+    public Rectangle getBound() {
         return bounds;
+    }
+
+    public float getDashTimer() {
+        return dashTimer;
     }
 }

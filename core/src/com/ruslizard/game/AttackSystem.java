@@ -16,14 +16,7 @@ public class AttackSystem {
         playerRectangle = player.getBoundsAttack();
     }
 
-//    public void setLizardHP(){
-//        lizardFactory.setHP(lizardFactory.getHP()-2);
-//        try {
-//            Thread.sleep(3);
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+
 
     public void attack(){
         for (Lizard l :

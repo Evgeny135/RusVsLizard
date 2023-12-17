@@ -1,5 +1,6 @@
 package com.ruslizard.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -11,8 +12,11 @@ import java.util.List;
 public class LizardFactory {
     private List<Lizard> lizardList;
 
+    private int playerHp =10;
+
     public LizardFactory() {
         lizardList = new ArrayList<>();
+
     }
 
     public void generateLizard() {
@@ -32,16 +36,25 @@ public class LizardFactory {
         Iterator<Lizard> it = lizardList.iterator();
         while (it.hasNext()) {
             Lizard l = it.next();
+            l.checkHp();
             l.draw(camera);
             l.update();
-            l.checkCollisionPlayer(player);
-            l.checkHp();
-            l.move(playerPosition);
-            if (l.getHP() <= 0 && l.isDeathFinished()) {
-                lizardList.remove(l);
+            l.move(playerPosition,player);
+            l.attack(player);
+            if (l.isAttack()){
+                l.setAttackTimer(l.getAttackTimer()-Gdx.graphics.getDeltaTime());
+                if (l.getAttackTimer()<=0) {
+                    playerHp--;
+                    l.setAttackTimer(0.5f);
+                }
+            }
+            if (l.getHP() <= 0 && l.isRemove()) {
+                it.remove();
             }
         }
     }
+
+
 
     public void regenerateLizard() {
         if (lizardList.isEmpty()) generateLizard();
@@ -49,5 +62,9 @@ public class LizardFactory {
 
     public List<Lizard> getLizardList() {
         return lizardList;
+    }
+
+    public int getPlayerHp() {
+        return playerHp;
     }
 }

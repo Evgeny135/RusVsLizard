@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import static com.ruslizard.game.Direction.*;
+
 public class Lizard {
     private Animation<TextureRegion> playerAnimation;
 
@@ -18,57 +20,29 @@ public class Lizard {
 
     private float speed;
     private float stateTime;
-    Direction direction = Direction.DOWN;
+    Vector2 direction;
     private int HP = 10;
     private final Rectangle bounds;
-//    private final CollisionController collisionController;
+    private boolean isDeath = false;
 
-    private final TextureRegion[] lizardStayDown = {new TextureRegion(new Texture("Lizard/lizardMoveDown/0.png"))};
-    private final TextureRegion[] lizardStayDeath = {new TextureRegion(new Texture("Lizard/lizardDeath/7.png"))};
+    private Rectangle boundsAttack;
 
-    private final TextureRegion[] lizardDeath = {new TextureRegion(new Texture("Lizard/lizardDeath/0.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/1.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/2.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/3.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/4.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/5.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/6.png")),
-            new TextureRegion(new Texture("Lizard/lizardDeath/7.png"))};
+    private boolean isFirst = false;
 
-    private final TextureRegion[] lizardRunDown = {new TextureRegion(new Texture("Lizard/lizardRunDown/0.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunDown/1.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunDown/2.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunDown/3.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunDown/4.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunDown/5.png"))};
+    private boolean isAttack = false;
+    private Direction dir;
 
-    private final TextureRegion[] lizardRunRight = {new TextureRegion(new Texture("Lizard/lizardRunRight/0.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunRight/1.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunRight/2.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunRight/3.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunRight/4.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunRight/5.png"))};
+    private float deathTimer = 2.9f;
 
-    private final TextureRegion[] lizardRunLeft = {new TextureRegion(new Texture("Lizard/lizardRunLeft/0.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunLeft/1.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunLeft/2.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunLeft/3.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunLeft/4.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunLeft/5.png"))};
-
-    private final TextureRegion[] lizardRunUp = {new TextureRegion(new Texture("Lizard/lizardRunUp/0.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunUp/1.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunUp/2.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunUp/3.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunUp/4.png")),
-            new TextureRegion(new Texture("Lizard/lizardRunUp/5.png"))};
-
+    private float attackTimer = 0.5f;
     private TextureRegion currentFrame;
 
-    private boolean deathFinished = false;
+    private boolean isRemove = false;
+
+    private int playerHp;
 
     public Lizard() {
-        playerAnimation = new Animation<>(0.15f, lizardStayDown);
+        playerAnimation = new Animation<>(0.15f, LizardAnimation.lizardStayDown);
 
         speed = 50;
 
@@ -77,80 +51,137 @@ public class Lizard {
         this.spriteBatch = new SpriteBatch();
 
         bounds = new Rectangle(position.x, position.y, playerAnimation.getKeyFrame(stateTime).getRegionWidth(), playerAnimation.getKeyFrame(stateTime).getRegionHeight());
+        boundsAttack = new Rectangle(position.x, position.y, playerAnimation.getKeyFrame(stateTime).getRegionWidth(), playerAnimation.getKeyFrame(stateTime).getRegionHeight());
     }
 
-    public void checkCollisionPlayer(Rectangle player){
-        if (bounds.overlaps(player)){
-            speed =0;
-            position.x-=1;
+    public boolean checkCollisionPlayer(Rectangle player) {
+        if (bounds.overlaps(player)) {
+            speed = 0;
+            return true;
         }
+        return false;
     }
 
     public void setPosition(float x, float y) {
         position.set(x, y);
     }
 
-    public void update(){
-        bounds.set(position.x+7, position.y+4, playerAnimation.getKeyFrame(stateTime).getRegionWidth()-10, playerAnimation.getKeyFrame(stateTime).getRegionHeight()-17);
+    public void update() {
+        bounds.set(position.x + 7, position.y + 4, playerAnimation.getKeyFrame(stateTime).getRegionWidth() - 10, playerAnimation.getKeyFrame(stateTime).getRegionHeight() - 17);
+        if (isDeath) {
+            deathTimer -= Gdx.graphics.getDeltaTime();
+            if (deathTimer <= 0) {
+                isRemove = true;
+            }
+        } else {
+            stateTime += Gdx.graphics.getDeltaTime();
+        }
     }
 
-    public void setHp(int hp){
+    public void setHp(int hp) {
         HP = hp;
     }
 
-    public void checkHp(){
-        if (HP <= 0){
-            setLizardAnimation(lizardDeath);
+    public void checkHp() {
+        if (HP <= 0) {
+            isDeath = true;
             speed = 0;
+            stateTime += Gdx.graphics.getDeltaTime();
+            setDeathLizardAnimation(LizardAnimation.lizardDeath);
         }
     }
 
-    public void move(Vector2 playerPosition){
-        Vector2 direction = playerPosition.cpy().sub(position).nor();
-        position.add(direction.scl(speed).scl(Gdx.graphics.getDeltaTime()));
-        if (direction.y < 0){
-            setLizardAnimation(lizardRunDown);
-        } if (direction.y>0){
-            setLizardAnimation(lizardRunUp);
+    public void move(Vector2 playerPosition, Rectangle player) {
+        direction = playerPosition.cpy().sub(position).nor();
+        if (!checkCollisionPlayer(player)) {
+            position.add(direction.scl(speed).scl(Gdx.graphics.getDeltaTime()));
         }
-         if (direction.x >0){
-            setLizardAnimation(lizardRunRight);
-        }
-         if (direction.x <0){
-            setLizardAnimation(lizardRunLeft);
+        if (Math.abs(direction.x) > Math.abs(direction.y)) {
+            if (direction.x > 0) {
+                dir = RIGHT;
+                setLizardAnimation(LizardAnimation.lizardRunRight);
+                boundsAttack.set(position.x + 41, position.y + 4, 5, bounds.height);
+            } else {
+                dir = LEFT;
+                setLizardAnimation(LizardAnimation.lizardRunLeft);
+                boundsAttack.set(position.x + 3, position.y + 4, 5, bounds.height);
+            }
+        } else {
+            if (direction.y > 0) {
+                dir = UP;
+                boundsAttack.set(position.x + 7, position.y + 32, bounds.width, 5);
+                setLizardAnimation(LizardAnimation.lizardRunUp);
+            } else {
+                dir = DOWN;
+                setLizardAnimation(LizardAnimation.lizardRunDown);
+                boundsAttack.set(position.x + 7, position.y, bounds.width, 5);
+            }
         }
     }
 
-    void setLizardAnimation(TextureRegion[] playerFrames){
+    public void attack(Rectangle player) {
+        if ((boundsAttack.overlaps(player) || checkCollisionPlayer(player)) && !isDeath) {
+            speed = 0;
+            isAttack = true;
+            if (dir == RIGHT) setLizardAnimation(LizardAnimation.lizardAttackRight);
+            else if (dir == LEFT) setLizardAnimation(LizardAnimation.lizardAttackLeft);
+            else if (dir == UP) setLizardAnimation(LizardAnimation.lizardAttackUp);
+            else if (dir == DOWN) setLizardAnimation(LizardAnimation.lizardAttackDown);
+        } else {
+            isAttack = false;
+            speed = 50;
+        }
+    }
+
+    void setLizardAnimation(TextureRegion[] playerFrames) {
         playerAnimation = new Animation<>(0.15f, playerFrames);
+    }
+
+    void setDeathLizardAnimation(TextureRegion[] playerFrames) {
+        if (!isFirst) {
+            stateTime = 0;
+            isFirst = true;
+        }
+        playerAnimation = new Animation<>(3f, playerFrames);
     }
 
     public void draw(Camera camera) {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
-        currentFrame = playerAnimation.getKeyFrame(stateTime+= Gdx.graphics.getDeltaTime(), true);
-        if (HP <= 0 && playerAnimation.isAnimationFinished(stateTime)){
-            setLizardAnimation(lizardStayDeath);
-            deathFinished = true;
+        if (isDeath) {
+            currentFrame = playerAnimation.getKeyFrame(stateTime += Gdx.graphics.getDeltaTime(), false);
+        } else {
+            currentFrame = playerAnimation.getKeyFrame(stateTime += Gdx.graphics.getDeltaTime(), true);
         }
         spriteBatch.draw(currentFrame, position.x, position.y, currentFrame.getRegionWidth(), currentFrame.getRegionHeight());
         spriteBatch.end();
-
     }
 
-    public boolean isDeathFinished() {
-        return deathFinished;
+    public float getAttackTimer() {
+        return attackTimer;
+    }
+
+    public void setAttackTimer(float attackTimer) {
+        this.attackTimer = attackTimer;
+    }
+
+    public boolean isRemove() {
+        return isRemove;
     }
 
     public int getHP() {
         return HP;
     }
 
-    public void setHP(int HP) {
-        this.HP = HP;
+    public Rectangle getBoundsAttack() {
+        return boundsAttack;
     }
 
     public Rectangle getBounds() {
         return bounds;
+    }
+
+    public boolean isAttack() {
+        return isAttack;
     }
 }
