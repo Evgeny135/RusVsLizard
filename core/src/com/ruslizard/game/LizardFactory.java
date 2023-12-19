@@ -12,52 +12,90 @@ import java.util.List;
 public class LizardFactory {
     private List<Lizard> lizardList;
 
-    private int playerHp =10;
+    private int count = 4;
 
-    public LizardFactory() {
+    private int playerHp = 10;
+
+    private boolean isCollision = false;
+
+    private List<Lizard> lizardBounds;
+
+    private Camera camera;
+
+    private Player player;
+
+    public LizardFactory(Camera camera, Player player) {
         lizardList = new ArrayList<>();
-
+        this.camera = camera;
+        this.player = player;
     }
 
-    public void generateLizard() {
-        Lizard lizard = new Lizard();
-        lizard.setPosition((float) (Math.random() * 1500), (float) (Math.random() * 900));
-        Lizard lizard1 = new Lizard();
-        lizard1.setPosition((float) (Math.random() * 1500), (float) (Math.random() * 900));
-        Lizard lizard2 = new Lizard();
-        lizard2.setPosition((float) (Math.random() * 1500), (float) (Math.random() * 900));
+    private Water water;
 
-        lizardList.add(lizard);
-        lizardList.add(lizard1);
-        lizardList.add(lizard2);
+    private boolean waterIsCreated = false;
+
+    public void generateLizard() {
+        for (int i = 0; i < count; i++) {
+            lizardList.add(new Lizard((float) (Math.random() * 1500), (float) (Math.random() * 900)));
+        }
+        lizardBounds = lizardList;
     }
 
     public void drawLizards(Camera camera, Vector2 playerPosition, Rectangle player) {
+        lizardBounds = lizardList;
         Iterator<Lizard> it = lizardList.iterator();
         while (it.hasNext()) {
             Lizard l = it.next();
             l.checkHp();
             l.draw(camera);
             l.update();
-            l.move(playerPosition,player);
+            for (Lizard l1 :
+                    lizardBounds) {
+                if ((l.getBounds().overlaps(l1.getBounds()) && !l1.equals(l))) {
+                    isCollision = true;
+                }else{
+                    isCollision=false;
+                }
+            }
+            l.move(playerPosition, player,isCollision);
             l.attack(player);
-            if (l.isAttack()){
-                l.setAttackTimer(l.getAttackTimer()-Gdx.graphics.getDeltaTime());
-                if (l.getAttackTimer()<=0) {
+            if (l.isAttack()) {
+                l.setAttackTimer(l.getAttackTimer() - Gdx.graphics.getDeltaTime());
+                if (l.getAttackTimer() <= 0) {
                     playerHp--;
                     l.setAttackTimer(0.5f);
                 }
             }
             if (l.getHP() <= 0 && l.isRemove()) {
+                if (!waterIsCreated){
+                    waterIsCreated = true;
+                    water = new Water(l.getPosition().x,l.getPosition().y);
+                    water.render(camera);
+                }
+                l.setBounds(null);
+                l.setBoundsAttack(null);
                 it.remove();
+            }
+            if (water != null){
+                water.render(camera);
             }
         }
     }
 
+    public void regenHp(){
+        if (player.getBound().overlaps(water.getBounds())){
 
+            playerHp = 10;
+            water = null;
+            waterIsCreated = false;
+        }
+    }
 
     public void regenerateLizard() {
-        if (lizardList.isEmpty()) generateLizard();
+        if (lizardList.isEmpty()){
+            count+=4;
+            generateLizard();
+        }
     }
 
     public List<Lizard> getLizardList() {
@@ -66,5 +104,9 @@ public class LizardFactory {
 
     public int getPlayerHp() {
         return playerHp;
+    }
+
+    public boolean isWaterIsCreated() {
+        return waterIsCreated;
     }
 }

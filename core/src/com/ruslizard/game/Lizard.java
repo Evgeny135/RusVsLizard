@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.util.Objects;
+
 import static com.ruslizard.game.Direction.*;
 
 public class Lizard {
@@ -22,7 +24,7 @@ public class Lizard {
     private float stateTime;
     Vector2 direction;
     private int HP = 10;
-    private final Rectangle bounds;
+    private Rectangle bounds;
     private boolean isDeath = false;
 
     private Rectangle boundsAttack;
@@ -41,7 +43,7 @@ public class Lizard {
 
     private int playerHp;
 
-    public Lizard() {
+    public Lizard(float x, float y) {
         playerAnimation = new Animation<>(0.15f, LizardAnimation.lizardStayDown);
 
         speed = 50;
@@ -52,6 +54,8 @@ public class Lizard {
 
         bounds = new Rectangle(position.x, position.y, playerAnimation.getKeyFrame(stateTime).getRegionWidth(), playerAnimation.getKeyFrame(stateTime).getRegionHeight());
         boundsAttack = new Rectangle(position.x, position.y, playerAnimation.getKeyFrame(stateTime).getRegionWidth(), playerAnimation.getKeyFrame(stateTime).getRegionHeight());
+
+        setPosition(x,y);
     }
 
     public boolean checkCollisionPlayer(Rectangle player) {
@@ -91,9 +95,9 @@ public class Lizard {
         }
     }
 
-    public void move(Vector2 playerPosition, Rectangle player) {
+    public void move(Vector2 playerPosition, Rectangle player, boolean isCollision) {
         direction = playerPosition.cpy().sub(position).nor();
-        if (!checkCollisionPlayer(player)) {
+        if (!checkCollisionPlayer(player) && !isCollision) {
             position.add(direction.scl(speed).scl(Gdx.graphics.getDeltaTime()));
         }
         if (Math.abs(direction.x) > Math.abs(direction.y)) {
@@ -157,6 +161,23 @@ public class Lizard {
         spriteBatch.end();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Lizard lizard = (Lizard) o;
+        return Float.compare(speed, lizard.speed) == 0 && Float.compare(stateTime, lizard.stateTime) == 0 && HP == lizard.HP && isDeath == lizard.isDeath && isFirst == lizard.isFirst && isAttack == lizard.isAttack && Float.compare(deathTimer, lizard.deathTimer) == 0 && Float.compare(attackTimer, lizard.attackTimer) == 0 && isRemove == lizard.isRemove && playerHp == lizard.playerHp && Objects.equals(playerAnimation, lizard.playerAnimation) && Objects.equals(spriteBatch, lizard.spriteBatch) && Objects.equals(position, lizard.position) && Objects.equals(direction, lizard.direction) && Objects.equals(bounds, lizard.bounds) && Objects.equals(boundsAttack, lizard.boundsAttack) && dir == lizard.dir && Objects.equals(currentFrame, lizard.currentFrame);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerAnimation, spriteBatch, position, speed, stateTime, direction, HP, bounds, isDeath, boundsAttack, isFirst, isAttack, dir, deathTimer, attackTimer, currentFrame, isRemove, playerHp);
+    }
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
     public float getAttackTimer() {
         return attackTimer;
     }
@@ -183,5 +204,13 @@ public class Lizard {
 
     public boolean isAttack() {
         return isAttack;
+    }
+
+    public void setBoundsAttack(Rectangle boundsAttack) {
+        this.boundsAttack = boundsAttack;
+    }
+
+    public void setBounds(Rectangle bounds) {
+        this.bounds = bounds;
     }
 }

@@ -22,20 +22,6 @@ public class CollisionController {
         return false;
     }
 
-    public boolean checkCollisionLizard(Rectangle object){
-        for (Lizard l:
-             lizardFactory.getLizardList()) {
-            if (l.getBounds().overlaps(object)){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public MapObjects getCollisionObjects() {
-        return mapObjects;
-    }
-
     public CollisionController(TiledMap tiledMap, LizardFactory lizardFactory) {
         this.mapObjects = tiledMap.getLayers().get("collision").getObjects();
         this.lizardFactory = lizardFactory;

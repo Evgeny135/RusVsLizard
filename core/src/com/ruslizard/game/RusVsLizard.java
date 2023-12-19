@@ -58,7 +58,7 @@ public class RusVsLizard extends Game{
 
 		spriteBatch = new SpriteBatch();
 
-		lizardFactory = new LizardFactory();
+		lizardFactory = new LizardFactory(camera,player);
 		heartScreen = new HeartScreen(lizardFactory);
 		lizardFactory.generateLizard();
 
@@ -103,6 +103,9 @@ public class RusVsLizard extends Game{
 		attackSystem.attack();
 
 		lizardFactory.regenerateLizard();
+		if (lizardFactory.isWaterIsCreated()) {
+			lizardFactory.regenHp();
+		}
 
 		lizardFactory.drawLizards(camera,player.getPosition(),player.getBound());
 

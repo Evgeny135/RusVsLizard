@@ -16,8 +16,6 @@ public class AttackSystem {
         playerRectangle = player.getBoundsAttack();
     }
 
-
-
     public void attack(){
         for (Lizard l :
                 lizardFactory.getLizardList()) {

@@ -21,7 +21,6 @@ public class HeartScreen implements Screen {
         this.lizardFactory = lizardFactory;
     }
 
-
     @Override
     public void show() {
         // Метод render() вызывается каждый кадр для отрисовки экрана
