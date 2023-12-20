@@ -20,6 +20,8 @@ public class LizardFactory {
 
     private List<Lizard> lizardBounds;
 
+    private int playerScore = 0;
+
     private Camera camera;
 
     private Player player;
@@ -67,14 +69,15 @@ public class LizardFactory {
                 }
             }
             if (l.getHP() <= 0 && l.isRemove()) {
-                if (!waterIsCreated){
-                    waterIsCreated = true;
-                    water = new Water(l.getPosition().x,l.getPosition().y);
-                    water.render(camera);
-                }
-                l.setBounds(null);
-                l.setBoundsAttack(null);
+                playerScore += 10;
                 it.remove();
+                if (!waterIsCreated){
+                    if ((Math.random()*10) <= 2) {
+                        waterIsCreated = true;
+                        water = new Water(l.getPosition().x, l.getPosition().y);
+                        water.render(camera);
+                    }
+                }
             }
             if (water != null){
                 water.render(camera);
@@ -84,7 +87,6 @@ public class LizardFactory {
 
     public void regenHp(){
         if (player.getBound().overlaps(water.getBounds())){
-
             playerHp = 10;
             water = null;
             waterIsCreated = false;
@@ -108,5 +110,13 @@ public class LizardFactory {
 
     public boolean isWaterIsCreated() {
         return waterIsCreated;
+    }
+
+    public int getPlayerScore() {
+        return playerScore;
+    }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
     }
 }

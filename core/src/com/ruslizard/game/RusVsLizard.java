@@ -40,6 +40,8 @@ public class RusVsLizard extends Game{
 
 	private ScreenDeath screenDeath;
 
+	private Score score;
+
 	@Override
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
@@ -70,6 +72,8 @@ public class RusVsLizard extends Game{
 
 		timerIcon = new TimerIcon(1520,880);
 
+		score = new Score(800,880);
+
 		screenDeath = new ScreenDeath();
 	}
 
@@ -86,7 +90,6 @@ public class RusVsLizard extends Game{
 		player.move();
 		for (Lizard l :
 				lizardFactory.getLizardList()) {
-
 		player.attack(l.getBounds());
 		}
 		player.draw(camera);
@@ -97,6 +100,8 @@ public class RusVsLizard extends Game{
 		spriteBatch.begin();
 		timerIcon.draw(spriteBatch);
 		timerIcon.update(player.getDashTimer());
+		score.draw(spriteBatch);
+		score.update(lizardFactory.getPlayerScore());
 		spriteBatch.end();
 		heartScreen.render(Gdx.graphics.getDeltaTime());
 

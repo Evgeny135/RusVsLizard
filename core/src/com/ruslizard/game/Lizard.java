@@ -153,6 +153,8 @@ public class Lizard {
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.begin();
         if (isDeath) {
+            bounds.width=0;
+            bounds.height=0;
             currentFrame = playerAnimation.getKeyFrame(stateTime += Gdx.graphics.getDeltaTime(), false);
         } else {
             currentFrame = playerAnimation.getKeyFrame(stateTime += Gdx.graphics.getDeltaTime(), true);
