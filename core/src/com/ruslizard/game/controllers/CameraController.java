@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.MathUtils;
 public class CameraController {
     private OrthographicCamera camera;
 
-
     public void controlCamera(TiledMap tiledMap, float x, float y ){
         int mapWidth = tiledMap.getProperties().get("width", Integer.class) * tiledMap.getProperties().get("tilewidth", Integer.class);
         int mapHeight = tiledMap.getProperties().get("height", Integer.class) * tiledMap.getProperties().get("tileheight", Integer.class);

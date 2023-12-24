@@ -33,6 +33,7 @@ public class RusVsLizard extends Game{
 	private AttackSystem attackSystem;
 
 	private Music music;
+	private Music musicOfDeath ;
 
 	private HeartScreen heartScreen;
 
@@ -46,6 +47,8 @@ public class RusVsLizard extends Game{
 	public void create() {
 		music = Gdx.audio.newMusic(Gdx.files.internal("main.mp3"));
 		music.setLooping(true);
+
+		musicOfDeath = Gdx.audio.newMusic(Gdx.files.internal("death.mp3"));
 
 		music.setVolume(0.1f);
 
@@ -115,29 +118,32 @@ public class RusVsLizard extends Game{
 		lizardFactory.drawLizards(camera,player.getPosition(),player.getBound());
 
 
-		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-		shapeRenderer.setColor(Color.RED);
-		shapeRenderer.setProjectionMatrix(camera.combined);
-		for (Lizard l :
-				lizardFactory.getLizardList()) {
-			shapeRenderer.rect(l.getBounds().x, l.getBounds().y, l.getBounds().width, l.getBounds().height);
-		}
-		for (Lizard l :
-				lizardFactory.getLizardList()) {
-			shapeRenderer.rect(l.getBoundsAttack().x, l.getBoundsAttack().y, l.getBoundsAttack().width, l.getBoundsAttack().height);
-		}
-		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
-		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
-		shapeRenderer.setProjectionMatrix(camera.combined);
-		for (MapObject mapObject :
-			tiledMap.getLayers().get("collision").getObjects()) {
-			Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
-			shapeRenderer.rect(rectangle.getX(), rectangle.getY(), rectangle.width, rectangle.height);
-		}
-
-		shapeRenderer.end();
+//		shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//		shapeRenderer.setColor(Color.RED);
+//		shapeRenderer.setProjectionMatrix(camera.combined);
+//		for (Lizard l :
+//				lizardFactory.getLizardList()) {
+//			shapeRenderer.rect(l.getBounds().x, l.getBounds().y, l.getBounds().width, l.getBounds().height);
+//		}
+//		for (Lizard l :
+//				lizardFactory.getLizardList()) {
+//			shapeRenderer.rect(l.getBoundsAttack().x, l.getBoundsAttack().y, l.getBoundsAttack().width, l.getBoundsAttack().height);
+//		}
+//		shapeRenderer.rect(player.getBoundsX(), player.getBoundsY(), player.getCurrentFrame().getRegionWidth()-20,player.getCurrentFrame().getRegionHeight()-18);
+//		shapeRenderer.rect(player.getBoundsAttackX(),player.getBoundsAttackY(),player.getBoundsAttack().width,player.getBoundsAttack().height);
+//		shapeRenderer.setProjectionMatrix(camera.combined);
+//		for (MapObject mapObject :
+//			tiledMap.getLayers().get("collision").getObjects()) {
+//			Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
+//			shapeRenderer.rect(rectangle.getX(), rectangle.getY(), rectangle.width, rectangle.height);
+//		}
+//
+//		shapeRenderer.end();
 
 		if (lizardFactory.getPlayerHp()<=0){
+			music.stop();
+			musicOfDeath.setLooping(true);
+			musicOfDeath.play();
 			setScreen(screenDeath);
 		}
 
